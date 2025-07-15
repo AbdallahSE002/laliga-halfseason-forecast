@@ -14,7 +14,7 @@ Then, using 2024/25’s first-half features, forecast the first-half point total
 ---
 
 ## 📊 Data & Scope  
-- **Source:** FBref “La Liga Matches 2019–2025” (Kaggle)  
+- **Source:** FBref “La Liga Matches 2019–2025” (Kaggle) → (Link: https://www.kaggle.com/datasets/marcelbiezunski/laliga-matches-dataset-2019-2025-fbref/data)
 - **Constraint:** 2024/25 season only has rounds 1–26; we use rounds 1–19 (first half) and ignore the missing second half  
 - **Season code:** end-year of campaign (e.g. 2024/25 → `season = 2024`)  
 
