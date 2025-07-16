@@ -31,36 +31,38 @@ Then, using 2024/25’s first-half features, forecast the first-half point total
 
 ## 🔍 Pipeline Overview
 
-1. **Data Prep** (`src/01_data_prep.py`)  
-   - Load raw CSV, drop unused columns  
-   - Assign `season` (Aug–May end-year) and per-team quarterly “round” index  
-   - Compute **first-half** aggregates (rounds 1–19):  
-     - `first_half_points` (3/1/0 for W/D/L)  
-     - `GD_first_half`, `xG_first_half`, `xGA_first_half`  
-     - `shot_acc_first_half`, `poss_first_half`  
+All steps are implemented in **`La_Liga_2025_26_Half_Season_Prediction_Analysis.ipynb`**:
 
-2. **Cross-Season Target** (`src/02_train_models.py`)  
-   - Merge season _N_ first-half features → season _N_ + 1 first-half **points**  
-   - Build a DataFrame of `(features_N, points_N+1)` for seasons 2019→20 through 2023→24  
+1. **Data Preparation**  
+   - Load the raw CSV and drop irrelevant columns  
+   - Compute `season` (campaign end‐year) and per‐team “round” index  
+   - Aggregate first‐half (rounds 1–19) stats:  
+     - Points (3/1/0 for W/D/L)  
+     - Goal Difference, xG, xGA  
+     - Shot accuracy, possession percentage  
 
-3. **Train / Validation / Back-Test**  
-   - **Train:** seasons 2019/20→2021/22 (`season` < 2022)  
-   - **Val:** season 2022/23 (`season` == 2022)  
-   - **Back-Test:** season 2023/24 (`season` == 2023)  
+2. **Cross-Season Target Building**  
+   - Merge season _N_ first-half features → season _N_+1 first-half points  
+   - Assemble the training table for seasons 2019/20 → 2023/24  
+
+3. **Train / Validation / Back-Test Split**  
+   - **Train:** seasons where `season < 2022` (i.e. 2019→20, 2020→21, 2021→22)  
+   - **Validation:** `season == 2022` (2022→23)  
+   - **Back-Test:** `season == 2023` (2023→24)  
 
 4. **Modeling**  
-   - **Baseline:** Linear Regression  
-   - **Tree:** Random Forest with `TimeSeriesSplit(n_splits=3)` + `RandomizedSearchCV`  
-   - **Deep:** TensorFlow MLP (32→16 ReLU layers → linear output)  
+   - **Linear Regression** baseline  
+   - **Random Forest** with `TimeSeriesSplit` & `RandomizedSearchCV` for hyperparameter tuning  
+   - **TensorFlow MLP** (32→16 ReLU layers → linear output)  
 
-5. **Evaluation & A/B Testing** (`src/03_evaluate.py`)  
-   - Compute **MAE**/RMSE on back-test (2023→24 H1)  
-   - **Wilcoxon signed-rank** test comparing RF vs TF MAE  
+5. **Evaluation & A/B Testing**  
+   - Compute MAE/RMSE on the back-test split  
+   - Wilcoxon signed-rank test comparing RF vs. TF model errors  
 
-6. **Forecast** (`src/04_forecast.py`)  
+6. **Forecasting**  
    - Input: 2024/25 first-half features (`season == 2024`)  
-   - Output: predicted 2025/26 first-half point totals for all 20 teams  
-
+   - Output: predicted 2025/26 first-half point totals for all 20 teams
+  
 ---
 
 ## 📈 Results Summary
